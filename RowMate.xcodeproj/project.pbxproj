@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B10000000000000000000001 /* RowMateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001; };
+		B10000000000000000000002 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002; };
+		B10000000000000000000003 /* WatchConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003; };
+		B10000000000000000000004 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004; };
+		B10000000000000000000005 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005; };
+		B10000000000000000000006 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006; };
+		B10000000000000000000007 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007; };
+		B10000000000000000000008 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008; };
+		B10000000000000000000009 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009; };
+		B1000000000000000000000A /* StrokeRateGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000A; };
+		B1000000000000000000000B /* SplitChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000B; };
+		B1000000000000000000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000C; };
+		B1000000000000000000000D /* SessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018; };
+		B1000000000000000000000E /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019; };
+		B1000000000000000000000F /* RowMate Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C10000000000000000000001 /* RowMateWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000D; };
+		C10000000000000000000002 /* StrokeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000E; };
+		C10000000000000000000003 /* RowingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000F; };
+		C10000000000000000000004 /* PhoneConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010; };
+		C10000000000000000000005 /* WatchSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011; };
+		C10000000000000000000006 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012; };
+		C10000000000000000000007 /* WatchStartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013; };
+		C10000000000000000000008 /* WatchWorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014; };
+		C10000000000000000000009 /* WatchSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015; };
+		C1000000000000000000000A /* WatchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016; };
+		C1000000000000000000000B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017; };
+		C1000000000000000000000C /* SessionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018; };
+		C1000000000000000000000D /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FB0000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA0000000000000000000001;
+			proxyType = 1;
+			remoteGlobalIDString = F10000000000000000000002;
+			remoteInfo = "RowMate Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E10000000000000000000004 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				B1000000000000000000000F /* RowMate Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000001 /* RowMateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowMateApp.swift; sourceTree = "<group>"; };
+		A10000000000000000000002 /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		A10000000000000000000003 /* WatchConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnector.swift; sourceTree = "<group>"; };
+		A10000000000000000000004 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		A10000000000000000000005 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A10000000000000000000006 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		A10000000000000000000007 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		A10000000000000000000008 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		A10000000000000000000009 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
+		A1000000000000000000000A /* StrokeRateGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeRateGauge.swift; sourceTree = "<group>"; };
+		A1000000000000000000000B /* SplitChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitChart.swift; sourceTree = "<group>"; };
+		A1000000000000000000000C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1000000000000000000000D /* RowMateWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowMateWatchApp.swift; sourceTree = "<group>"; };
+		A1000000000000000000000E /* StrokeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeDetector.swift; sourceTree = "<group>"; };
+		A1000000000000000000000F /* RowingSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowingSession.swift; sourceTree = "<group>"; };
+		A10000000000000000000010 /* PhoneConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneConnector.swift; sourceTree = "<group>"; };
+		A10000000000000000000011 /* WatchSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionStore.swift; sourceTree = "<group>"; };
+		A10000000000000000000012 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		A10000000000000000000013 /* WatchStartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchStartView.swift; sourceTree = "<group>"; };
+		A10000000000000000000014 /* WatchWorkoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchWorkoutView.swift; sourceTree = "<group>"; };
+		A10000000000000000000015 /* WatchSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSummaryView.swift; sourceTree = "<group>"; };
+		A10000000000000000000016 /* WatchHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchHistoryView.swift; sourceTree = "<group>"; };
+		A10000000000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A10000000000000000000018 /* SessionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionData.swift; sourceTree = "<group>"; };
+		A10000000000000000000019 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		A1000000000000000000001A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1000000000000000000001B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1000000000000000000001C /* RowMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RowMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1000000000000000000001D /* RowMate Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RowMate Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E10000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E10000000000000000000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D10000000000000000000001 /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				D10000000000000000000002 /* RowMate */,
+				D10000000000000000000006 /* RowMate Watch App */,
+				D10000000000000000000009 /* Shared */,
+				D1000000000000000000000A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D10000000000000000000002 /* RowMate */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000001 /* RowMateApp.swift */,
+				D10000000000000000000003 /* Models */,
+				D10000000000000000000004 /* Views */,
+				A1000000000000000000000C /* Assets.xcassets */,
+				A1000000000000000000001A /* Info.plist */,
+			);
+			path = RowMate;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000002 /* SessionStore.swift */,
+				A10000000000000000000003 /* WatchConnector.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000004 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000004 /* MainTabView.swift */,
+				A10000000000000000000005 /* DashboardView.swift */,
+				A10000000000000000000006 /* HistoryView.swift */,
+				A10000000000000000000007 /* SessionDetailView.swift */,
+				A10000000000000000000008 /* StatsView.swift */,
+				D10000000000000000000005 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000005 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000009 /* MetricCard.swift */,
+				A1000000000000000000000A /* StrokeRateGauge.swift */,
+				A1000000000000000000000B /* SplitChart.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000006 /* RowMate Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000000000D /* RowMateWatchApp.swift */,
+				D10000000000000000000007 /* Models */,
+				D10000000000000000000008 /* Views */,
+				A10000000000000000000017 /* Assets.xcassets */,
+				A1000000000000000000001B /* Info.plist */,
+			);
+			path = "RowMate Watch App";
+			sourceTree = "<group>";
+		};
+		D10000000000000000000007 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000000000E /* StrokeDetector.swift */,
+				A1000000000000000000000F /* RowingSession.swift */,
+				A10000000000000000000010 /* PhoneConnector.swift */,
+				A10000000000000000000011 /* WatchSessionStore.swift */,
+				A10000000000000000000012 /* HapticManager.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000008 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000013 /* WatchStartView.swift */,
+				A10000000000000000000014 /* WatchWorkoutView.swift */,
+				A10000000000000000000015 /* WatchSummaryView.swift */,
+				A10000000000000000000016 /* WatchHistoryView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D10000000000000000000009 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000018 /* SessionData.swift */,
+				A10000000000000000000019 /* Formatters.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		D1000000000000000000000A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000000001C /* RowMate.app */,
+				A1000000000000000000001D /* RowMate Watch App.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F10000000000000000000001 /* RowMate */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE0000000000000000000002;
+			buildPhases = (
+				E10000000000000000000001 /* Sources */,
+				E10000000000000000000002 /* Frameworks */,
+				E10000000000000000000003 /* Resources */,
+				E10000000000000000000004 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FC0000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = RowMate;
+			productName = RowMate;
+			productReference = A1000000000000000000001C;
+			productType = "com.apple.product-type.application";
+		};
+		F10000000000000000000002 /* RowMate Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE0000000000000000000003;
+			buildPhases = (
+				E10000000000000000000005 /* Sources */,
+				E10000000000000000000006 /* Frameworks */,
+				E10000000000000000000007 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RowMate Watch App";
+			productName = "RowMate Watch App";
+			productReference = A1000000000000000000001D;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FA0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					F10000000000000000000001 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+					F10000000000000000000002 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = FE0000000000000000000001;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = fr;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				fr,
+				Base,
+			);
+			mainGroup = D10000000000000000000001;
+			productRefGroup = D1000000000000000000000A;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F10000000000000000000001 /* RowMate */,
+				F10000000000000000000002 /* RowMate Watch App */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E10000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1000000000000000000000C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E10000000000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1000000000000000000000B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E10000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000001 /* RowMateApp.swift in Sources */,
+				B10000000000000000000002 /* SessionStore.swift in Sources */,
+				B10000000000000000000003 /* WatchConnector.swift in Sources */,
+				B10000000000000000000004 /* MainTabView.swift in Sources */,
+				B10000000000000000000005 /* DashboardView.swift in Sources */,
+				B10000000000000000000006 /* HistoryView.swift in Sources */,
+				B10000000000000000000007 /* SessionDetailView.swift in Sources */,
+				B10000000000000000000008 /* StatsView.swift in Sources */,
+				B10000000000000000000009 /* MetricCard.swift in Sources */,
+				B1000000000000000000000A /* StrokeRateGauge.swift in Sources */,
+				B1000000000000000000000B /* SplitChart.swift in Sources */,
+				B1000000000000000000000D /* SessionData.swift in Sources */,
+				B1000000000000000000000E /* Formatters.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E10000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C10000000000000000000001 /* RowMateWatchApp.swift in Sources */,
+				C10000000000000000000002 /* StrokeDetector.swift in Sources */,
+				C10000000000000000000003 /* RowingSession.swift in Sources */,
+				C10000000000000000000004 /* PhoneConnector.swift in Sources */,
+				C10000000000000000000005 /* WatchSessionStore.swift in Sources */,
+				C10000000000000000000006 /* HapticManager.swift in Sources */,
+				C10000000000000000000007 /* WatchStartView.swift in Sources */,
+				C10000000000000000000008 /* WatchWorkoutView.swift in Sources */,
+				C10000000000000000000009 /* WatchSummaryView.swift in Sources */,
+				C1000000000000000000000A /* WatchHistoryView.swift in Sources */,
+				C1000000000000000000000C /* SessionData.swift in Sources */,
+				C1000000000000000000000D /* Formatters.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FC0000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F10000000000000000000002;
+			targetProxy = FB0000000000000000000001;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FD0000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		FD0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FD0000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RowMate/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flavian.RowMate;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FD0000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RowMate/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flavian.RowMate;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FD0000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "RowMate Watch App/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flavian.RowMate.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 8.0;
+			};
+			name = Debug;
+		};
+		FD0000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "RowMate Watch App/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.flavian.RowMate.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 8.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FE0000000000000000000001 /* Build configuration list for PBXProject "RowMate" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD0000000000000000000001 /* Debug */,
+				FD0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE0000000000000000000002 /* Build configuration list for PBXNativeTarget "RowMate" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD0000000000000000000003 /* Debug */,
+				FD0000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE0000000000000000000003 /* Build configuration list for PBXNativeTarget "RowMate Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD0000000000000000000005 /* Debug */,
+				FD0000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = FA0000000000000000000001 /* Project object */;
+}
