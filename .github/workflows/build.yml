@@ -51,14 +51,45 @@ jobs:
           CONFIGURATION_BUILD_DIR=$(pwd)/build-ios \
           2>&1 | tail -30
 
+    - name: Verify and fix app bundle
+      run: |
+        echo "=== iOS app contents ==="
+        ls -la build-ios/RowMate.app/
+
+        # Ensure Info.plist exists
+        if [ ! -f "build-ios/RowMate.app/Info.plist" ]; then
+          echo "Info.plist missing, copying from source..."
+          # Process Info.plist - replace variables
+          sed -e 's/$(EXECUTABLE_NAME)/RowMate/g' \
+              -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.flavian.RowMate/g' \
+              -e 's/$(PRODUCT_NAME)/RowMate/g' \
+              -e 's/$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' \
+              RowMate/Info.plist > build-ios/RowMate.app/Info.plist
+          echo "Info.plist created"
+        fi
+
+        echo "=== Info.plist check ==="
+        cat build-ios/RowMate.app/Info.plist
+
     - name: Embed Watch app in iOS app
       run: |
         mkdir -p "build-ios/RowMate.app/Watch"
-        cp -r "build-watch/RowMate Watch App.app" "build-ios/RowMate.app/Watch/"
-        echo "=== iOS app contents ==="
-        ls -la build-ios/RowMate.app/
-        echo "=== Watch folder ==="
-        ls -la "build-ios/RowMate.app/Watch/"
+        if [ -d "build-watch/RowMate Watch App.app" ]; then
+          cp -r "build-watch/RowMate Watch App.app" "build-ios/RowMate.app/Watch/"
+          echo "Watch app embedded"
+
+          # Fix Watch Info.plist too
+          if [ ! -f "build-ios/RowMate.app/Watch/RowMate Watch App.app/Info.plist" ]; then
+            sed -e 's/$(EXECUTABLE_NAME)/RowMate Watch App/g' \
+                -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.flavian.RowMate.watchkitapp/g' \
+                -e 's/$(PRODUCT_NAME)/RowMate Watch App/g' \
+                -e 's/$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' \
+                "RowMate Watch App/Info.plist" > "build-ios/RowMate.app/Watch/RowMate Watch App.app/Info.plist"
+            echo "Watch Info.plist created"
+          fi
+        else
+          echo "Warning: Watch app not found, skipping embed"
+        fi
 
     - name: Create IPA
       run: |
@@ -66,6 +97,8 @@ jobs:
         cp -r build-ios/RowMate.app Payload/
         zip -r RowMate.ipa Payload
         ls -la RowMate.ipa
+        # Verify IPA contents
+        unzip -l RowMate.ipa | head -20
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
