@@ -1,0 +1,46 @@
+name: Build RowMate IPA
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+
+    - name: Show Xcode version
+      run: xcodebuild -version
+
+    - name: Build iOS app (unsigned)
+      run: |
+        xcodebuild \
+          -project RowMate.xcodeproj \
+          -scheme RowMate \
+          -destination 'generic/platform=iOS' \
+          -configuration Release \
+          CODE_SIGN_IDENTITY="-" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          DEVELOPMENT_TEAM="" \
+          AD_HOC_CODE_SIGNING_ALLOWED=YES \
+          build \
+          CONFIGURATION_BUILD_DIR=${{ github.workspace }}/build
+
+    - name: Create IPA
+      run: |
+        mkdir -p Payload
+        cp -r build/RowMate.app Payload/
+        zip -r RowMate.ipa Payload
+
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: RowMate-IPA
+        path: RowMate.ipa
