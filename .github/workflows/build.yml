@@ -19,41 +19,41 @@ jobs:
         sudo xcode-select -s "$XCODE/Contents/Developer"
         xcodebuild -version
 
-    - name: Archive iOS app
+    - name: Build iOS target only
       run: |
-        xcodebuild archive \
+        xcodebuild build \
           -project RowMate.xcodeproj \
-          -scheme RowMate \
+          -target RowMate \
           -sdk iphoneos \
-          -destination 'generic/platform=iOS' \
           -configuration Release \
-          -archivePath $PWD/build/RowMate.xcarchive \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
           DEVELOPMENT_TEAM="" \
-          SKIP_INSTALL=NO \
           ONLY_ACTIVE_ARCH=NO \
-          COMPILER_INDEX_STORE_ENABLE=NO
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          CONFIGURATION_BUILD_DIR=$(pwd)/build \
+          SKIP_INSTALL=NO \
+          2>&1 | tee build.log | tail -50
 
-    - name: Show archive contents
+    - name: Check build output
+      if: always()
       run: |
-        echo "=== Archive contents ==="
-        find build/RowMate.xcarchive -name "*.app" -type d
-        echo "=== App contents ==="
-        APP=$(find build/RowMate.xcarchive/Products -name "*.app" -type d | head -1)
-        ls -la "$APP/"
-        echo "=== Info.plist check ==="
-        cat "$APP/Info.plist" | head -20
+        echo "=== Checking build directory ==="
+        ls -la build/ 2>/dev/null || echo "No build dir"
+        echo "=== Looking for .app ==="
+        find build -name "*.app" -type d 2>/dev/null || echo "No .app found"
+        if [ -d "build/RowMate.app" ]; then
+          echo "=== App contents ==="
+          ls -la build/RowMate.app/
+          echo "=== Info.plist ==="
+          cat build/RowMate.app/Info.plist | head -30
+        fi
 
-    - name: Create IPA from archive
+    - name: Create IPA
       run: |
-        APP_PATH=$(find build/RowMate.xcarchive/Products -name "RowMate.app" -type d | head -1)
-        echo "App path: $APP_PATH"
         mkdir -p Payload
-        cp -r "$APP_PATH" Payload/
-        echo "=== Payload contents ==="
-        ls -la Payload/RowMate.app/
+        cp -r build/RowMate.app Payload/
         zip -r RowMate.ipa Payload
         ls -la RowMate.ipa
 
