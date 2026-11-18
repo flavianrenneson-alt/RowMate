@@ -19,23 +19,7 @@ jobs:
         sudo xcode-select -s "$XCODE/Contents/Developer"
         xcodebuild -version
 
-    - name: Build Watch app (watchOS SDK)
-      run: |
-        xcodebuild build \
-          -project RowMate.xcodeproj \
-          -target "RowMate Watch App" \
-          -sdk watchos \
-          -configuration Release \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          DEVELOPMENT_TEAM="" \
-          ONLY_ACTIVE_ARCH=NO \
-          COMPILER_INDEX_STORE_ENABLE=NO \
-          CONFIGURATION_BUILD_DIR=$(pwd)/build-watch \
-          2>&1 | tail -30
-
-    - name: Build iOS app (iphoneos SDK)
+    - name: Build iOS app
       run: |
         xcodebuild build \
           -project RowMate.xcodeproj \
@@ -48,57 +32,90 @@ jobs:
           DEVELOPMENT_TEAM="" \
           ONLY_ACTIVE_ARCH=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          CONFIGURATION_BUILD_DIR=$(pwd)/build-ios \
           2>&1 | tail -30
 
-    - name: Verify and fix app bundle
+    - name: Find and prepare app bundle
       run: |
-        echo "=== iOS app contents ==="
-        ls -la build-ios/RowMate.app/
+        echo "=== Finding RowMate.app ==="
+        APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -path "*/Release-iphoneos/*" -not -path "*/Watch/*" -type d 2>/dev/null | head -1)
+        echo "Found: $APP_PATH"
 
-        # Ensure Info.plist exists
-        if [ ! -f "build-ios/RowMate.app/Info.plist" ]; then
-          echo "Info.plist missing, copying from source..."
-          # Process Info.plist - replace variables
+        echo "=== App contents ==="
+        ls -la "$APP_PATH/"
+
+        echo "=== Checking executable ==="
+        ls -la "$APP_PATH/RowMate" 2>/dev/null || echo "No executable"
+
+        echo "=== Checking Info.plist ==="
+        ls -la "$APP_PATH/Info.plist" 2>/dev/null || echo "No Info.plist"
+
+        if [ ! -f "$APP_PATH/Info.plist" ]; then
+          echo "Copying Info.plist..."
           sed -e 's/$(EXECUTABLE_NAME)/RowMate/g' \
               -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.flavian.RowMate/g' \
               -e 's/$(PRODUCT_NAME)/RowMate/g' \
               -e 's/$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' \
-              RowMate/Info.plist > build-ios/RowMate.app/Info.plist
-          echo "Info.plist created"
+              RowMate/Info.plist > "$APP_PATH/Info.plist"
         fi
 
-        echo "=== Info.plist check ==="
-        cat build-ios/RowMate.app/Info.plist
+        echo "=== Final Info.plist ==="
+        cat "$APP_PATH/Info.plist"
 
-    - name: Embed Watch app in iOS app
+        # Save path for next step
+        echo "$APP_PATH" > /tmp/app_path.txt
+
+    - name: Build Watch app
       run: |
-        mkdir -p "build-ios/RowMate.app/Watch"
-        if [ -d "build-watch/RowMate Watch App.app" ]; then
-          cp -r "build-watch/RowMate Watch App.app" "build-ios/RowMate.app/Watch/"
-          echo "Watch app embedded"
+        xcodebuild build \
+          -project RowMate.xcodeproj \
+          -target "RowMate Watch App" \
+          -sdk watchos \
+          -configuration Release \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          DEVELOPMENT_TEAM="" \
+          ONLY_ACTIVE_ARCH=NO \
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          2>&1 | tail -30
 
-          # Fix Watch Info.plist too
-          if [ ! -f "build-ios/RowMate.app/Watch/RowMate Watch App.app/Info.plist" ]; then
+    - name: Embed Watch app
+      run: |
+        APP_PATH=$(cat /tmp/app_path.txt)
+        WATCH_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate Watch App.app" -path "*/Release-watchos/*" -type d 2>/dev/null | head -1)
+
+        if [ -n "$WATCH_PATH" ]; then
+          echo "Watch app found: $WATCH_PATH"
+          mkdir -p "$APP_PATH/Watch"
+          cp -r "$WATCH_PATH" "$APP_PATH/Watch/"
+
+          # Fix Watch Info.plist if missing
+          WATCH_DEST="$APP_PATH/Watch/RowMate Watch App.app"
+          if [ ! -f "$WATCH_DEST/Info.plist" ]; then
             sed -e 's/$(EXECUTABLE_NAME)/RowMate Watch App/g' \
                 -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.flavian.RowMate.watchkitapp/g' \
                 -e 's/$(PRODUCT_NAME)/RowMate Watch App/g' \
                 -e 's/$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' \
-                "RowMate Watch App/Info.plist" > "build-ios/RowMate.app/Watch/RowMate Watch App.app/Info.plist"
-            echo "Watch Info.plist created"
+                "RowMate Watch App/Info.plist" > "$WATCH_DEST/Info.plist"
           fi
+          echo "Watch app embedded"
         else
-          echo "Warning: Watch app not found, skipping embed"
+          echo "Watch app not found, skipping"
         fi
 
     - name: Create IPA
       run: |
+        APP_PATH=$(cat /tmp/app_path.txt)
         mkdir -p Payload
-        cp -r build-ios/RowMate.app Payload/
+        cp -r "$APP_PATH" Payload/
+
+        echo "=== Verify IPA contents ==="
+        ls -la Payload/RowMate.app/
+        ls -la Payload/RowMate.app/RowMate 2>/dev/null && echo "Executable OK" || echo "NO EXECUTABLE"
+        ls -la Payload/RowMate.app/Info.plist 2>/dev/null && echo "Info.plist OK" || echo "NO INFO.PLIST"
+
         zip -r RowMate.ipa Payload
         ls -la RowMate.ipa
-        # Verify IPA contents
-        unzip -l RowMate.ipa | head -20
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
