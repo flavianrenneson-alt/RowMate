@@ -19,7 +19,23 @@ jobs:
         sudo xcode-select -s "$XCODE/Contents/Developer"
         xcodebuild -version
 
-    - name: Build iOS target only
+    - name: Build Watch app (watchOS SDK)
+      run: |
+        xcodebuild build \
+          -project RowMate.xcodeproj \
+          -target "RowMate Watch App" \
+          -sdk watchos \
+          -configuration Release \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          DEVELOPMENT_TEAM="" \
+          ONLY_ACTIVE_ARCH=NO \
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          CONFIGURATION_BUILD_DIR=$(pwd)/build-watch \
+          2>&1 | tail -30
+
+    - name: Build iOS app (iphoneos SDK)
       run: |
         xcodebuild build \
           -project RowMate.xcodeproj \
@@ -32,28 +48,22 @@ jobs:
           DEVELOPMENT_TEAM="" \
           ONLY_ACTIVE_ARCH=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          CONFIGURATION_BUILD_DIR=$(pwd)/build \
-          SKIP_INSTALL=NO \
-          2>&1 | tee build.log | tail -50
+          CONFIGURATION_BUILD_DIR=$(pwd)/build-ios \
+          2>&1 | tail -30
 
-    - name: Check build output
-      if: always()
+    - name: Embed Watch app in iOS app
       run: |
-        echo "=== Checking build directory ==="
-        ls -la build/ 2>/dev/null || echo "No build dir"
-        echo "=== Looking for .app ==="
-        find build -name "*.app" -type d 2>/dev/null || echo "No .app found"
-        if [ -d "build/RowMate.app" ]; then
-          echo "=== App contents ==="
-          ls -la build/RowMate.app/
-          echo "=== Info.plist ==="
-          cat build/RowMate.app/Info.plist | head -30
-        fi
+        mkdir -p "build-ios/RowMate.app/Watch"
+        cp -r "build-watch/RowMate Watch App.app" "build-ios/RowMate.app/Watch/"
+        echo "=== iOS app contents ==="
+        ls -la build-ios/RowMate.app/
+        echo "=== Watch folder ==="
+        ls -la "build-ios/RowMate.app/Watch/"
 
     - name: Create IPA
       run: |
         mkdir -p Payload
-        cp -r build/RowMate.app Payload/
+        cp -r build-ios/RowMate.app Payload/
         zip -r RowMate.ipa Payload
         ls -la RowMate.ipa
 
