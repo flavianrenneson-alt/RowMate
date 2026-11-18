@@ -32,90 +32,74 @@ jobs:
           DEVELOPMENT_TEAM="" \
           ONLY_ACTIVE_ARCH=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
+          SYMROOT=$(pwd)/build-output \
           2>&1 | tail -30
 
-    - name: Find and prepare app bundle
+    - name: Find app bundle
       run: |
-        echo "=== Finding RowMate.app ==="
-        APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -path "*/Release-iphoneos/*" -not -path "*/Watch/*" -type d 2>/dev/null | head -1)
-        echo "Found: $APP_PATH"
+        echo "=== All .app in build-output ==="
+        find $(pwd)/build-output -name "*.app" -type d 2>/dev/null
+        echo "=== All .app in DerivedData ==="
+        find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null
+        echo "=== Release-iphoneos contents ==="
+        find $(pwd)/build-output -path "*/Release-iphoneos" -type d 2>/dev/null | while read d; do
+          echo "--- $d ---"
+          ls -la "$d/"
+        done
 
-        echo "=== App contents ==="
+    - name: Prepare IPA
+      run: |
+        # Find the app - try build-output first, then DerivedData
+        APP_PATH=$(find $(pwd)/build-output -name "RowMate.app" -type d 2>/dev/null | head -1)
+        if [ -z "$APP_PATH" ]; then
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null | head -1)
+        fi
+
+        if [ -z "$APP_PATH" ]; then
+          echo "ERROR: RowMate.app not found anywhere!"
+          exit 1
+        fi
+
+        echo "Using app: $APP_PATH"
+        echo "=== Contents ==="
         ls -la "$APP_PATH/"
 
-        echo "=== Checking executable ==="
-        ls -la "$APP_PATH/RowMate" 2>/dev/null || echo "No executable"
-
-        echo "=== Checking Info.plist ==="
-        ls -la "$APP_PATH/Info.plist" 2>/dev/null || echo "No Info.plist"
-
-        if [ ! -f "$APP_PATH/Info.plist" ]; then
-          echo "Copying Info.plist..."
-          sed -e 's/$(EXECUTABLE_NAME)/RowMate/g' \
-              -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.flavian.RowMate/g' \
-              -e 's/$(PRODUCT_NAME)/RowMate/g' \
-              -e 's/$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' \
-              RowMate/Info.plist > "$APP_PATH/Info.plist"
+        # Check executable
+        if [ -f "$APP_PATH/RowMate" ]; then
+          echo "Executable found"
+        else
+          echo "ERROR: No executable in app bundle"
+          exit 1
         fi
 
-        echo "=== Final Info.plist ==="
+        # Fix Info.plist if missing
+        if [ ! -f "$APP_PATH/Info.plist" ]; then
+          echo "Adding Info.plist..."
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string fr" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string RowMate" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string RowMate" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.flavian.RowMate" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleInfoDictionaryVersion string 6.0" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleName string RowMate" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundlePackageType string APPL" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string 16.0" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily array" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily:0 integer 1" "$APP_PATH/Info.plist"
+          echo "Info.plist created"
+        fi
+
         cat "$APP_PATH/Info.plist"
 
-        # Save path for next step
-        echo "$APP_PATH" > /tmp/app_path.txt
-
-    - name: Build Watch app
-      run: |
-        xcodebuild build \
-          -project RowMate.xcodeproj \
-          -target "RowMate Watch App" \
-          -sdk watchos \
-          -configuration Release \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          DEVELOPMENT_TEAM="" \
-          ONLY_ACTIVE_ARCH=NO \
-          COMPILER_INDEX_STORE_ENABLE=NO \
-          2>&1 | tail -30
-
-    - name: Embed Watch app
-      run: |
-        APP_PATH=$(cat /tmp/app_path.txt)
-        WATCH_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate Watch App.app" -path "*/Release-watchos/*" -type d 2>/dev/null | head -1)
-
-        if [ -n "$WATCH_PATH" ]; then
-          echo "Watch app found: $WATCH_PATH"
-          mkdir -p "$APP_PATH/Watch"
-          cp -r "$WATCH_PATH" "$APP_PATH/Watch/"
-
-          # Fix Watch Info.plist if missing
-          WATCH_DEST="$APP_PATH/Watch/RowMate Watch App.app"
-          if [ ! -f "$WATCH_DEST/Info.plist" ]; then
-            sed -e 's/$(EXECUTABLE_NAME)/RowMate Watch App/g' \
-                -e 's/$(PRODUCT_BUNDLE_IDENTIFIER)/com.flavian.RowMate.watchkitapp/g' \
-                -e 's/$(PRODUCT_NAME)/RowMate Watch App/g' \
-                -e 's/$(PRODUCT_BUNDLE_PACKAGE_TYPE)/APPL/g' \
-                "RowMate Watch App/Info.plist" > "$WATCH_DEST/Info.plist"
-          fi
-          echo "Watch app embedded"
-        else
-          echo "Watch app not found, skipping"
-        fi
-
-    - name: Create IPA
-      run: |
-        APP_PATH=$(cat /tmp/app_path.txt)
+        # Create IPA
         mkdir -p Payload
         cp -r "$APP_PATH" Payload/
-
-        echo "=== Verify IPA contents ==="
-        ls -la Payload/RowMate.app/
-        ls -la Payload/RowMate.app/RowMate 2>/dev/null && echo "Executable OK" || echo "NO EXECUTABLE"
-        ls -la Payload/RowMate.app/Info.plist 2>/dev/null && echo "Info.plist OK" || echo "NO INFO.PLIST"
-
         zip -r RowMate.ipa Payload
+        echo "=== IPA created ==="
         ls -la RowMate.ipa
+        echo "=== Verify ==="
+        unzip -l RowMate.ipa | grep -E "(RowMate$|Info.plist)" | head -10
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
