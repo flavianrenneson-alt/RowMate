@@ -12,7 +12,7 @@ struct WatchHomeView: View {
                     .font(.system(size: 32))
                     .foregroundColor(.cyan)
                 Text("RowMate")
-                    .font(.system(.headline, design: .rounded))
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
 
                 Button(action: {
                     session.phoneConnector = PhoneConnector.shared
@@ -24,7 +24,7 @@ struct WatchHomeView: View {
                         Image(systemName: "play.fill")
                         Text("Nouvelle seance")
                     }
-                    .font(.system(.body, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)

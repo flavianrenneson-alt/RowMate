@@ -8,7 +8,7 @@ struct WatchSummaryView: View {
         ScrollView {
             VStack(spacing: 6) {
                 Image(systemName: "checkmark.circle.fill").font(.system(size: 28)).foregroundColor(.green)
-                Text("Seance terminee").font(.system(.headline, design: .rounded)).padding(.bottom, 4)
+                Text("Seance terminee").font(.system(size: 17, weight: .semibold, design: .rounded)).padding(.bottom, 4)
 
                 if let d = data {
                     SRow(icon: "timer", label: "Duree", value: Formatters.time(d.duration))
@@ -37,7 +37,7 @@ struct WatchSummaryView: View {
 
                 Button(action: { isPresented = false }) {
                     Text("OK")
-                        .font(.system(.body, weight: .semibold))
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.white).frame(maxWidth: .infinity)
                         .padding(.vertical, 8).background(Color.blue).cornerRadius(10)
                 }
