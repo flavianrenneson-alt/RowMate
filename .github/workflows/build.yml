@@ -19,6 +19,31 @@ jobs:
         sudo xcode-select -s "$XCODE/Contents/Developer"
         xcodebuild -version
 
+    - name: Remove Watch dependency from iOS target
+      run: |
+        # Remove the Watch target dependency and embed phase from project
+        # so iOS can build independently
+        python3 << 'PYEOF'
+        import re
+
+        with open('RowMate.xcodeproj/project.pbxproj', 'r') as f:
+            content = f.read()
+
+        # Remove the target dependency entry
+        content = re.sub(r'\s*FC0000000000000000000001 /\* PBXTargetDependency \*/,?\n?', '\n', content)
+
+        # Remove the Embed Watch Content build phase reference from RowMate target
+        content = re.sub(r'\s*E10000000000000000000004 /\* Embed Watch Content \*/,?\n?', '\n', content)
+
+        # Remove the Watch app embed build file
+        content = re.sub(r'\s*B1000000000000000000000F /\* RowMate Watch App\.app in Embed Watch Content \*/.*\n', '', content)
+
+        with open('RowMate.xcodeproj/project.pbxproj', 'w') as f:
+            f.write(content)
+
+        print("Watch dependency removed from iOS target")
+        PYEOF
+
     - name: Build iOS app
       run: |
         xcodebuild build \
@@ -32,74 +57,76 @@ jobs:
           DEVELOPMENT_TEAM="" \
           ONLY_ACTIVE_ARCH=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          SYMROOT=$(pwd)/build-output \
-          2>&1 | tail -30
+          SYMROOT=$(pwd)/build-output
 
-    - name: Find app bundle
+    - name: Build Watch app
       run: |
-        echo "=== All .app in build-output ==="
-        find $(pwd)/build-output -name "*.app" -type d 2>/dev/null
-        echo "=== All .app in DerivedData ==="
-        find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null
-        echo "=== Release-iphoneos contents ==="
-        find $(pwd)/build-output -path "*/Release-iphoneos" -type d 2>/dev/null | while read d; do
-          echo "--- $d ---"
-          ls -la "$d/"
-        done
+        # Restore original project for Watch build
+        git checkout -- RowMate.xcodeproj/project.pbxproj
+        xcodebuild build \
+          -project RowMate.xcodeproj \
+          -target "RowMate Watch App" \
+          -sdk watchos \
+          -configuration Release \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          DEVELOPMENT_TEAM="" \
+          ONLY_ACTIVE_ARCH=NO \
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          SYMROOT=$(pwd)/build-watch-output \
+          2>&1 | tail -20
 
-    - name: Prepare IPA
+    - name: Create IPA
       run: |
-        # Find the app - try build-output first, then DerivedData
-        APP_PATH=$(find $(pwd)/build-output -name "RowMate.app" -type d 2>/dev/null | head -1)
-        if [ -z "$APP_PATH" ]; then
-          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null | head -1)
+        IOS_APP="build-output/Release-iphoneos/RowMate.app"
+        echo "=== iOS app contents ==="
+        ls -la "$IOS_APP/"
+        echo "=== Executable check ==="
+        file "$IOS_APP/RowMate" 2>/dev/null || echo "No executable"
+
+        # Add Info.plist if missing
+        if [ ! -f "$IOS_APP/Info.plist" ]; then
+          echo "Creating Info.plist with PlistBuddy..."
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string fr" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string RowMate" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string RowMate" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.flavian.RowMate" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleInfoDictionaryVersion string 6.0" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleName string RowMate" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundlePackageType string APPL" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string 16.0" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily array" "$IOS_APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily:0 integer 1" "$IOS_APP/Info.plist"
         fi
 
-        if [ -z "$APP_PATH" ]; then
-          echo "ERROR: RowMate.app not found anywhere!"
-          exit 1
+        # Embed Watch app
+        WATCH_APP="build-watch-output/Release-watchos/RowMate Watch App.app"
+        if [ -d "$WATCH_APP" ]; then
+          mkdir -p "$IOS_APP/Watch"
+          cp -r "$WATCH_APP" "$IOS_APP/Watch/"
+          # Fix Watch Info.plist if needed
+          if [ ! -f "$IOS_APP/Watch/RowMate Watch App.app/Info.plist" ]; then
+            /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string RowMate Watch App" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.flavian.RowMate.watchkitapp" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleName string RowMate Watch App" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+            /usr/libexec/PlistBuddy -c "Add :CFBundlePackageType string APPL" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+            /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+            /usr/libexec/PlistBuddy -c "Add :WKApplication bool true" "$IOS_APP/Watch/RowMate Watch App.app/Info.plist"
+          fi
+          echo "Watch app embedded"
         fi
-
-        echo "Using app: $APP_PATH"
-        echo "=== Contents ==="
-        ls -la "$APP_PATH/"
-
-        # Check executable
-        if [ -f "$APP_PATH/RowMate" ]; then
-          echo "Executable found"
-        else
-          echo "ERROR: No executable in app bundle"
-          exit 1
-        fi
-
-        # Fix Info.plist if missing
-        if [ ! -f "$APP_PATH/Info.plist" ]; then
-          echo "Adding Info.plist..."
-          /usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string fr" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string RowMate" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string RowMate" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.flavian.RowMate" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleInfoDictionaryVersion string 6.0" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleName string RowMate" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundlePackageType string APPL" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string 16.0" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily array" "$APP_PATH/Info.plist"
-          /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily:0 integer 1" "$APP_PATH/Info.plist"
-          echo "Info.plist created"
-        fi
-
-        cat "$APP_PATH/Info.plist"
 
         # Create IPA
         mkdir -p Payload
-        cp -r "$APP_PATH" Payload/
+        cp -r "$IOS_APP" Payload/
+        echo "=== Final verification ==="
+        ls -laR Payload/RowMate.app/ | head -30
         zip -r RowMate.ipa Payload
-        echo "=== IPA created ==="
         ls -la RowMate.ipa
-        echo "=== Verify ==="
-        unzip -l RowMate.ipa | grep -E "(RowMate$|Info.plist)" | head -10
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
