@@ -12,20 +12,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Show available Xcode versions
-      run: ls /Applications/ | grep Xcode
-
     - name: Select latest Xcode
       run: |
-        XCODE=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+        XCODE=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
         echo "Using $XCODE"
         sudo xcode-select -s "$XCODE/Contents/Developer"
         xcodebuild -version
+        xcodebuild -showsdks
 
     - name: List schemes
       run: xcodebuild -project RowMate.xcodeproj -list
 
-    - name: Build iOS app (unsigned)
+    - name: Build iOS app
       run: |
         xcodebuild \
           -project RowMate.xcodeproj \
@@ -36,16 +34,32 @@ jobs:
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGN_ENTITLEMENTS="" \
           DEVELOPMENT_TEAM="" \
+          PRODUCT_BUNDLE_IDENTIFIER=com.flavian.RowMate \
           ONLY_ACTIVE_ARCH=NO \
-          build \
-          CONFIGURATION_BUILD_DIR=$(pwd)/build
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          build 2>&1 | tail -100
+
+    - name: Find built app
+      run: |
+        find ~/Library/Developer/Xcode/DerivedData -name "*.app" -type d 2>/dev/null | head -20
+        echo "---"
+        find /tmp -name "*.app" -type d 2>/dev/null | head -10
 
     - name: Create IPA
       run: |
+        APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -path "*/Release-iphoneos/*" -type d 2>/dev/null | head -1)
+        if [ -z "$APP_PATH" ]; then
+          echo "RowMate.app not found, searching everywhere..."
+          find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null
+          exit 1
+        fi
+        echo "Found app at: $APP_PATH"
         mkdir -p Payload
-        cp -r build/RowMate.app Payload/
+        cp -r "$APP_PATH" Payload/
         zip -r RowMate.ipa Payload
+        ls -la RowMate.ipa
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
