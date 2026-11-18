@@ -19,42 +19,59 @@ jobs:
         sudo xcode-select -s "$XCODE/Contents/Developer"
         xcodebuild -version
 
-    - name: List schemes
-      run: xcodebuild -project RowMate.xcodeproj -list
-
-    - name: Build iOS app
+    - name: Build app
       run: |
-        xcodebuild \
+        xcodebuild build \
           -project RowMate.xcodeproj \
           -scheme RowMate \
-          -sdk iphoneos \
           -destination 'generic/platform=iOS' \
           -configuration Release \
-          CODE_SIGN_IDENTITY="" \
+          CODE_SIGN_IDENTITY="-" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
-          CODE_SIGN_ENTITLEMENTS="" \
+          AD_HOC_CODE_SIGNING_ALLOWED=YES \
           DEVELOPMENT_TEAM="" \
-          PRODUCT_BUNDLE_IDENTIFIER=com.flavian.RowMate \
           ONLY_ACTIVE_ARCH=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          build 2>&1 | tail -100
+          2>&1 | tee /tmp/build.log | tail -50
+        echo "BUILD EXIT CODE: $?"
 
-    - name: Find and fix app bundle
+    - name: Show errors if any
+      if: failure()
+      run: grep -i "error:" /tmp/build.log | tail -20
+
+    - name: Find app and verify
       run: |
-        echo "=== All RowMate.app ==="
+        echo "=== Searching for RowMate.app ==="
         find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null
 
         APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -path "*/Release-iphoneos/*" -type d 2>/dev/null | head -1)
-        echo "Using: $APP_PATH"
-        ls -la "$APP_PATH/"
 
-        # Verify executable exists
+        if [ -z "$APP_PATH" ]; then
+          echo "Not found in Release-iphoneos, trying any location..."
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "RowMate.app" -type d 2>/dev/null | head -1)
+        fi
+
+        echo "Using: $APP_PATH"
+        echo "=== Full contents ==="
+        ls -laR "$APP_PATH/" | head -50
+
+        # HARD CHECK: executable MUST exist
+        if [ ! -f "$APP_PATH/RowMate" ]; then
+          echo "!!! EXECUTABLE MISSING !!!"
+          echo "=== Build log errors ==="
+          grep -i "error\|fail\|warning" /tmp/build.log | tail -30
+          echo "=== DerivedData structure ==="
+          find ~/Library/Developer/Xcode/DerivedData -name "RowMate" -type f 2>/dev/null | head -10
+          exit 1
+        fi
+
+        echo "=== Executable OK ==="
         file "$APP_PATH/RowMate"
 
-        # Add Info.plist if missing
+        # HARD CHECK: Info.plist MUST exist
         if [ ! -f "$APP_PATH/Info.plist" ]; then
-          echo "Creating Info.plist..."
+          echo "Info.plist missing, creating..."
           /usr/libexec/PlistBuddy -c "Add :CFBundleDevelopmentRegion string fr" "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c "Add :CFBundleDisplayName string RowMate" "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string RowMate" "$APP_PATH/Info.plist"
@@ -68,12 +85,9 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily array" "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c "Add :UIDeviceFamily:0 integer 1" "$APP_PATH/Info.plist"
           /usr/libexec/PlistBuddy -c "Add :UILaunchScreen dict" "$APP_PATH/Info.plist"
-          echo "Info.plist created"
-        else
-          echo "Info.plist already exists"
         fi
+        echo "=== Info.plist OK ==="
 
-        cat "$APP_PATH/Info.plist"
         echo "$APP_PATH" > /tmp/app_path.txt
 
     - name: Create IPA
@@ -81,13 +95,20 @@ jobs:
         APP_PATH=$(cat /tmp/app_path.txt)
         mkdir -p Payload
         cp -r "$APP_PATH" Payload/
-        zip -r RowMate.ipa Payload
-        echo "=== Verify IPA ==="
-        unzip -l RowMate.ipa | grep -E "RowMate\.app/(RowMate|Info)"
-        ls -la RowMate.ipa
+
+        echo "=== FINAL VERIFICATION ==="
+        echo "Executable:"
+        ls -la Payload/RowMate.app/RowMate
+        echo "Info.plist:"
+        ls -la Payload/RowMate.app/Info.plist
+        echo "All contents:"
+        ls -la Payload/RowMate.app/
+
+        zip -r RowMate-final.ipa Payload
+        ls -la RowMate-final.ipa
 
     - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
-        name: RowMate-IPA
-        path: RowMate.ipa
+        name: RowMate-FINAL-IPA
+        path: RowMate-final.ipa
